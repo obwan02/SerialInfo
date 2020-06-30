@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    macserial:
+        build: ./macserial
+        volumes: 
+            - ./macserial:/usr/local/src/macserial
+        ports:
+            - 3345:80
+    serialinfo:
+        build: ./serialinfo
+        volumes:
+            - ./serialinfo:/usr/local/src/serialinfo
+        ports:
+            - 3346:80
+        depends_on: 
+            - macserial
