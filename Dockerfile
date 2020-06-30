@@ -1,11 +1,10 @@
-FROM ubuntu:18.04
-# escape=`
+FROM gcc:10.1
+WORKDIR /usr/local/src/macserial
+COPY ./macserial ./macserial
+RUN gcc -v macserial.c -o /usr/local/bin/macserial
 
-# Use the latest Windows Server Core image with .NET Framework 4.8.
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
-
-# Restore the default Windows shell for correct batch processing.
-SHELL ["cmd", "/S", "/C"]
-COPY ./src ./src
-RUN gcc -v ./src/macserial/macserial.c -o ./src/macserial.prog
-ENTRYPOINT [ "python", "./src/main.py" ]
+FROM python:3
+WORKDIR /usr/local/src/serialinfo
+COPY ./main.py ./main.py
+COPY ./requirements.txt ./requirements.txt
+ENTRYPOINT [ "python", "/usr/local/src/serialinfo/main.py" ]
