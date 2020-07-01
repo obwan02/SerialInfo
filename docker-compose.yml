@@ -4,13 +4,14 @@ services:
     macserial:
         build: ./macserial
         volumes: 
-            - ./macserial:/usr/local/src/macserial
+            - ./macserial/gosrc:/usr/src/macserial_server
+            - ./macserial/macserialsrc:/usr/src/macserial
         ports:
             - 3345:80
     serialinfo:
         build: ./serialinfo
         volumes:
-            - ./serialinfo:/usr/local/src/serialinfo
+            - ./serialinfo:/usr/src/serialinfo
         ports:
             - 3346:80
         depends_on: 

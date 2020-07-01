@@ -28,8 +28,16 @@ func genSerialInfoItem(item string, out *SerialInfoItem) {
 	data := strings.SplitN(strings.TrimSpace(item), "-", 2)
 	out.Value = strings.TrimSpace(data[1])
 
-	if strings.Contains(item, "Unknown") || strings.Contains(item, "-1") {
+	if strings.Contains(item, "Unknown") {
 		out.Invalid = true
+	} else if strings.Contains(item, "-1") {
+		if strings.Contains(data[0], "Week") {
+			if strings.Contains(strings.Split(data[1], "(")[0], "-1") {
+				out.Invalid = true
+			}
+		} else {
+			out.Invalid = true
+		}
 	}
 }
 
