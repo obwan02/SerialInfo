@@ -9,7 +9,7 @@ def GetMacSerialInfo(serial: str):
     resp = post("http://macserial", data=postBody)
     info = loads(resp.content)
     if info[serial] == "ERR":
-        raise ValueError("Invalid serial or request for serial.")
+        raise ValueError("Serial:Invalid")
 
     return info[serial]
 
@@ -33,7 +33,7 @@ def GetEveryMacName(year, model):
         if "Showing" in i:
             nextIter = True
     if name == "":
-        raise ValueError("Could not find corresponding modelname")
+        raise ValueError("Serial:Unknown")
     return name
 
 def SerialToModelName(serial):
