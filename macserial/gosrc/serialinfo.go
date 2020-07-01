@@ -2,31 +2,31 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
 	"strings"
 )
 
 //SerialInfoItem struct
 type SerialInfoItem struct {
-	Invalid bool
-	Key     string
-	Value   interface{}
+	Invalid bool        `json:"Invalid"`
+	Value   interface{} `json:"Value"`
 }
 
 //SerialInfo struct
 type SerialInfo struct {
-	Country SerialInfoItem
-	Year    SerialInfoItem
-	Week    SerialInfoItem
-	Line    SerialInfoItem
-	Model   SerialInfoItem
+	Country SerialInfoItem `json:"Country"`
+	Year    SerialInfoItem `json:"Year"`
+	Week    SerialInfoItem `json:"Week"`
+	Line    SerialInfoItem `json:"Line"`
+	Model   SerialInfoItem `json:"Model"`
 
-	Valid string
+	Valid string `json:"Valid"`
 }
 
 func genSerialInfoItem(item string, out *SerialInfoItem) {
-	data := strings.SplitN(item, "-", 1)
-	out.Key, out.Value = strings.TrimSpace(data[0]), strings.TrimSpace(data[1])
+	data := strings.SplitN(strings.TrimSpace(item), "-", 2)
+	out.Value = strings.TrimSpace(data[1])
 
 	if strings.Contains(item, "Unknown") || strings.Contains(item, "-1") {
 		out.Invalid = true
@@ -52,6 +52,14 @@ func parseMacSerialOutput(bdata []byte) (SerialInfo, error) {
 	return result, nil
 }
 
-func main() {
-	cmd := exec.Command("/usr/local/bin/macserial", "--info", "SERIAL")
+//GetSerialInfo func
+func GetSerialInfo(serial string) (SerialInfo, error) {
+	cmd := exec.Command("/usr/bin/macserial", "--info", serial)
+	data, err := cmd.Output()
+	if err != nil {
+		fmt.Printf("Error while running macserial: %s\n", err.Error())
+		return SerialInfo{}, err
+	}
+
+	return parseMacSerialOutput(data)
 }

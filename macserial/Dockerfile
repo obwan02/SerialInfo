@@ -1,10 +1,11 @@
-FROM gcc:10.1
-WORKDIR /usr/local/src/macserial
-COPY ./src/* ./
-RUN gcc macserial.c -o /usr/local/bin/macserial
+FROM gcc:10.1 as macserial
+WORKDIR /usr/src/macserial
+COPY ./macserialsrc/* ./
+RUN gcc macserial.c -o /usr/bin/macserial
 
-FROM golang:1.11
-WORKDIR /usr/local/src/macserial_server
-COPY ./server.go ./server.go
-RUN go build server.go -o /usr/local/bin/macserial_server
-ENTRYPOINT [ "/usr/local/bin/macserial_server" ]
+FROM golang:1.14
+WORKDIR /usr/src/macserial_server
+COPY ./gosrc/* ./
+RUN go build -o /usr/bin/macserial_server
+COPY --from=macserial /usr/bin/macserial /usr/bin/macserial
+ENTRYPOINT [ "/usr/bin/macserial_server" ]
