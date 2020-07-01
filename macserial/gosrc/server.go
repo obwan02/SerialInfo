@@ -17,13 +17,15 @@ func finishResponse(out http.ResponseWriter, result map[string]interface{}, stat
 func StartServer(port string) error {
 	http.HandleFunc("/", func(out http.ResponseWriter, req *http.Request) {
 		out.Header().Set("Content-Type", "application/json")
+		status := http.StatusOK
 
 		fmt.Printf("New request from %s\n", req.Host)
 		result := make(map[string]interface{})
+		defer finishResponse(out, result, status)
 
 		if req.Method != "POST" {
 			fmt.Println("ERROR: Recieved request that isn't POST")
-			finishResponse(out, result, http.StatusMethodNotAllowed)
+			status = http.StatusMethodNotAllowed
 			return
 		}
 
@@ -33,12 +35,12 @@ func StartServer(port string) error {
 		if err != nil {
 			fmt.Println("ERROR: Invalid JSON in serials param")
 			fmt.Printf("ERROR: %s", err.Error())
-			finishResponse(out, result, http.StatusBadRequest)
+			status = http.StatusBadRequest
 			return
 		}
 
 		if serials == nil {
-			finishResponse(out, result, http.StatusBadRequest)
+			status = http.StatusBadRequest
 			fmt.Println("ERROR: Recieved request with invalid serials param")
 			return
 		}
@@ -52,7 +54,6 @@ func StartServer(port string) error {
 				result[item] = "ERR"
 			}
 		}
-		finishResponse(out, result, http.StatusOK)
 	})
 
 	return http.ListenAndServe(":"+port, nil)

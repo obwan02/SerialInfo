@@ -20,11 +20,18 @@ type SerialInfo struct {
 	Week    SerialInfoItem `json:"Week"`
 	Line    SerialInfoItem `json:"Line"`
 	Model   SerialInfoItem `json:"Model"`
-
-	Valid string `json:"Valid"`
 }
 
 func genSerialInfoItem(item string, out *SerialInfoItem) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Failed generating serial item")
+			out.Invalid = true
+			out.Value = nil
+		}
+		return
+	}()
+
 	data := strings.SplitN(strings.TrimSpace(item), "-", 2)
 	out.Value = strings.TrimSpace(data[1])
 
